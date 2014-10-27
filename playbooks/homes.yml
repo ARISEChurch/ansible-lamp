@@ -9,7 +9,7 @@
       file:
         path: "/home/{{ lamp_users[item].name }}"
         mode: "0700"
-      with_items: lamp_admins
+      with_items: host_admins
 
     - name: Set chroot homes to root ownership
       file:
@@ -17,4 +17,4 @@
         owner: "root"
         group: "root"
         mode: "0755"
-      with_items: lamp_sites
+      with_items: host_sites
