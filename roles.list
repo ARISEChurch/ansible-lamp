@@ -1,0 +1,15 @@
+debops.apt_preferences
+debops.etc_services
+debops.auth
+debops.pki
+debops.apt
+debops.ferm
+debops.ntp
+debops.sshd
+debops.console
+debops.rsyslog
+debops.tcpwrappers
+debops.users
+debops.sshkeys
+debops.directories
+debops.mysql

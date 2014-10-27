@@ -1,0 +1,22 @@
+---
+
+apache_packages:
+  - apache2
+  - apache2-utils
+  - apache2-mpm-worker
+  - php5-fpm
+  - php5-mysql
+  - php5-gd
+
+apache_modules:
+  - rewrite
+  - proxy
+  - proxy_fcgi
+  - ssl
+
+apache_server_root: /etc/apache2
+
+apache_vhost_path: /etc/apache2/sites-available
+apache_vhost_enabled_path: /etc/apache2/sites-enabled
+
+fpm_pool_path: /etc/php5/fpm/pool.d

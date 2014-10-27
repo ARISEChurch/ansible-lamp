@@ -1,0 +1,57 @@
+---
+
+users_admins:
+{% for user in host_admins %}
+{% set lamp_user = lamp_users[user] %}
+  - name: "{{ lamp_user.name }}"
+    groups: {{ lamp_user.groups|default(['admins']) }}
+    sshkeys:
+{% for public_key in lamp_user.public_keys|default(['files/' + lamp_user.name + '/key.pub']) %}
+      - "{{ lookup('file', '../' + public_key) }}"
+{% endfor %}
+{% endfor %}
+
+users_list:
+{% for site in host_sites %}
+{% set lamp_site = lamp_sites[site] %}
+  - name: "{{ site }}"
+    groups: {{ lamp_site.groups|default(['sftponly']) }}
+{% endfor %}
+
+sshkeys_list:
+{% for site in host_sites %}
+{% set lamp_site = lamp_sites[site] %}
+  - name: "{{ site }}"
+    sshkeys:
+{% for user in host_admins %}{% set lamp_user = lamp_users[user] %}
+{% for public_key in lamp_user.public_keys|default(['files/' + lamp_user.name + '/key.pub']) %}
+      - "{{ lookup('file', '../' + public_key) }}"
+{% endfor %}
+{% endfor %}
+{% for public_key in lamp_site.public_keys|default([]) %}
+      - "{{ lookup('file', '../' + public_key) }}"
+{% endfor %}
+{% endfor %}
+
+mysql_databases:
+{% for site in host_sites %}
+{% set lamp_site = lamp_sites[site] %}
+{% for db in lamp_site.dbs|default([]) %}
+  - name: {{ db }}
+{% endfor %}
+{% endfor %}
+
+mysql_users:
+{% for site in host_sites %}
+{% set lamp_site = lamp_sites[site] %}
+  - name: {{ site }}
+    priv: "{{ lamp_site.dbs|join('.*:ALL/') }}.*:ALL"
+{% endfor %}
+
+deploy_sites:
+{% for site in host_sites %}
+{% set lamp_site = lamp_sites[site] %}
+{% if lamp_site.deployable|default(false) %}
+  - '{{ site }}'
+{% endif %}
+{% endfor %}

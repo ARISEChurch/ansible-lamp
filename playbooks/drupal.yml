@@ -1,0 +1,7 @@
+---
+
+- hosts: drupal
+  sudo: True
+
+  roles:
+    - role: '../roles/drupal'

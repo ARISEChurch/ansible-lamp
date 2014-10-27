@@ -1,0 +1,48 @@
+---
+
+- name: Generate ssh key
+  user:
+    name: "{{ item }}"
+    generate_ssh_key: yes
+  with_items: host_sites
+  when: lamp_sites[item].deployable is defined and True == lamp_sites[item].deployable
+
+- name: Create repo directory
+  file:
+    state: "directory"
+    path: "/home/{{ item }}/repo"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: host_sites
+  when: lamp_sites[item].deployable is defined and True == lamp_sites[item].deployable
+
+- name: Clone git repo
+  git:
+    bare: yes
+    repo: "{{ lamp_sites[item].git }}"
+    dest: "/home/{{ item }}/repo"
+    accept_hostkey: yes
+    update: no
+  sudo: True
+  sudo_user: "{{ item }}"
+  with_items: host_sites
+  when: lamp_sites[item].deployable is defined and True == lamp_sites[item].deployable
+  ignore_errors: True
+
+- name: Create shared directory
+  file:
+    state: "directory"
+    path: "/home/{{ item }}/shared"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: host_sites
+  when: lamp_sites[item].deployable is defined and True == lamp_sites[item].deployable
+
+- name: Create releases directory
+  file:
+    state: "directory"
+    path: "/home/{{ item }}/releases"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: host_sites
+  when: lamp_sites[item].deployable is defined and True == lamp_sites[item].deployable

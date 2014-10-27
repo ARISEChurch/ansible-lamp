@@ -1,0 +1,4 @@
+---
+
+deploy_archive_prefix: '/tmp/deploy-{{ deploy_timestamp }}'
+deploy_releases: {}

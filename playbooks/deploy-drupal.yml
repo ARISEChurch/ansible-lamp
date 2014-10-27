@@ -1,0 +1,12 @@
+---
+
+- include: 'config.yml'
+
+- hosts: '{{ hosts }}'
+  sudo: yes
+
+  roles:
+    - role: ../roles/deploy-git
+      deploy_symlinks:
+        - src: 'default'
+          dest: 'sites/default'

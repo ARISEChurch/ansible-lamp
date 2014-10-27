@@ -1,0 +1,19 @@
+---
+
+- name: Ensure shared default directory
+  file:
+    state: "directory"
+    path: "/home/{{ item }}/shared/default"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: host_sites
+  when: lamp_sites[item].drupal is defined and lamp_sites[item].drupal == True
+
+- name: Create settings.php
+  template:
+    src: 'settings.php.j2'
+    dest: "/home/{{ item }}/shared/default/settings.php"
+    owner: '{{ item }}'
+    group: '{{ item }}'
+  with_items: host_sites
+  when: lamp_sites[item].drupal is defined and lamp_sites[item].drupal == True

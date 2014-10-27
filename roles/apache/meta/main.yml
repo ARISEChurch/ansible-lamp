@@ -1,0 +1,11 @@
+---
+
+dependencies:
+  - role: debops.ferm
+    ferm_input_list:
+
+      - type: 'dport_accept'
+        dport: [ 'http', 'https' ]
+        accept_any: True
+        weight: '20'
+        filename: 'apache_dependency_accept'

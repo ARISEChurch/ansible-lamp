@@ -1,0 +1,8 @@
+---
+
+- name: Setup mysql
+  hosts: 'db'
+  sudo: True
+
+  roles:
+    - { role: debops.mysql, tags: mysql }

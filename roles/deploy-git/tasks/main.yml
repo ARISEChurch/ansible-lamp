@@ -1,0 +1,86 @@
+---
+
+- set_fact:
+    deploy_timestamp: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+- name: Update git repo
+  git:
+    bare: yes
+    repo: "{{ lamp_sites[item].git }}"
+    dest: "/home/{{ item }}/repo"
+    version: '{{ deploy_version }}'
+    update: yes
+  sudo_user: "{{ item }}"
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
+
+- name: Create git archive
+  command: "git archive {{ deploy_version }} --format=tgz -o '{{ deploy_archive_prefix }}-{{ item }}.tgz'"
+  args:
+    chdir: '/home/{{ item }}/repo'
+  sudo_user: "{{ item }}"
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
+
+- name: Create release directory
+  file:
+    state: "directory"
+    path: '/home/{{ item }}/releases/{{ deploy_timestamp }}'
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
+
+- name: Extract git archive
+  unarchive:
+    copy: no
+    src: '{{ deploy_archive_prefix }}-{{ item }}.tgz'
+    dest: '/home/{{ item }}/releases/{{ deploy_timestamp }}'
+  sudo_user: '{{ item }}'
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
+
+- name: Remove git archive
+  file:
+    state: 'absent'
+    path: '{{deploy_archive_prefix}}-{{ item }}.tgz'
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
+
+- name: Remove deploy_symlinks from release
+  file:
+    state: 'absent'
+    path: '/home/{{ item[0] }}/releases/{{ deploy_timestamp }}/{{ item[1].dest }}'
+  with_nested:
+    - deploy_sites
+    - deploy_symlinks
+  when: sites is not defined or item[0] in sites
+
+- name: Create deploy_symlinks
+  file:
+    state: 'link'
+    src: '/home/{{ item[0] }}/shared/{{ item[1].src }}'
+    dest: '/home/{{ item[0] }}/releases/{{ deploy_timestamp }}/{{ item[1].dest }}'
+  with_nested:
+    - deploy_sites
+    - deploy_symlinks
+  when: sites is not defined or item[0] in sites
+
+- name: Symlink public_html to latest release
+  file:
+    state: 'link'
+    src: '/home/{{ item }}/releases/{{ deploy_timestamp }}'
+    dest: '/home/{{ item }}/public_html'
+    force: yes
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
+
+- name: Only keep latest 10 releases
+  shell: 'rm -r `ls -r | tail -n +11`'
+  args:
+    chdir: '/home/{{ item }}/releases'
+  sudo_user: '{{ item }}'
+  with_items: deploy_sites
+  when: sites is not defined or item in sites

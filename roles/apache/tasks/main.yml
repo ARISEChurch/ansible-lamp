@@ -1,0 +1,71 @@
+---
+
+- name: Add ondrej apache2 repo
+  apt_repository: >
+    repo="ppa:ondrej/apache2"
+    state="present"
+
+- name: Install apache packages
+  apt: >
+    name="{{ item }}"
+    state="latest"
+  with_items: apache_packages
+
+- name: Enable apache modules
+  apache2_module: >
+    state="present"
+    name="{{ item }}"
+  with_items: apache_modules
+  notify: Restart apache
+
+- name: Remove default Virtualhost
+  file: >
+    state="absent"
+    path="{{ apache_vhost_enabled_path }}/000-default.conf"
+- file: >
+    state="absent"
+    path="{{ apache_vhost_path }}/000-default.conf"
+
+- name: Create user public_html
+  file:
+    state="directory"
+    path="/home/{{ item }}/public_html"
+    owner="{{ item }}"
+    group="{{ item }}"
+  with_items: host_sites
+
+- name: Create user logs
+  file:
+    state="directory"
+    path="/home/{{ item }}/logs"
+    owner="{{ item }}"
+    group="{{ item }}"
+  with_items: host_sites
+
+- name: Create vhost files
+  template: >
+    src="vhost.conf.j2"
+    dest="{{ apache_vhost_path }}/{{ item }}.conf"
+  with_items: host_sites
+
+- name: Enable site vhost files
+  file: >
+    state="link"
+    src="{{ apache_vhost_path }}/{{ item }}.conf"
+    dest="{{ apache_vhost_enabled_path }}/{{ item }}.conf"
+  with_items: host_sites
+  notify: Restart apache
+
+- name: Remove fpm www pool
+  file: >
+    state="absent"
+    path="{{ fpm_pool_path }}/www.conf"
+
+- name: Create fpm pool config
+  template: >
+    src="fpm-pool.conf.j2"
+    dest="{{ fpm_pool_path}}/{{ item }}.conf"
+  with_items: host_sites
+  notify: Restart fpm
+
+#  vim: set ft=ansible ts=2 sw=2 tw=80 et :
