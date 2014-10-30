@@ -7,7 +7,7 @@
     owner: "{{ item }}"
     group: "{{ item }}"
   with_items: host_sites
-  when: lamp_sites[item].drupal is defined and lamp_sites[item].drupal == True
+  when: lamp_sites[item].type is defined and lamp_sites[item].type == 'drupal'
 
 - name: Create settings.php
   template:
@@ -16,4 +16,4 @@
     owner: '{{ item }}'
     group: '{{ item }}'
   with_items: host_sites
-  when: lamp_sites[item].drupal is defined and lamp_sites[item].drupal == True
+  when: lamp_sites[item].type is defined and lamp_sites[item].type == 'drupal'

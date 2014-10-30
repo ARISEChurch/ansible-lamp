@@ -1,0 +1,35 @@
+---
+
+- name: Ensure shared uploads directory
+  file:
+    state: "directory"
+    path: "/home/{{ item }}/shared/uploads"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: host_sites
+  when: lamp_sites[item].type is defined and lamp_sites[item].type == 'wordpress'
+
+- name: 'Get wordpress salt'
+  uri:
+    url: 'https://api.wordpress.org/secret-key/1.1/salt/'
+  register: 'wordpress_salt'
+  with_items: host_sites
+  when: lamp_sites[item].type is defined and lamp_sites[item].type == 'wordpress'
+
+- name: Create wp-config.php
+  template:
+    src: 'wp-config.php.j2'
+    dest: "/home/{{ item }}/shared/wp-config.php"
+    owner: '{{ item }}'
+    group: '{{ item }}'
+  with_items: host_sites
+  when: lamp_sites[item].type is defined and lamp_sites[item].type == 'wordpress'
+
+- name: Create htaccess
+  template:
+    src: 'htaccess.j2'
+    dest: '/home/{{ item }}/shared/htaccess'
+    owner: '{{ item }}'
+    group: '{{ item }}'
+  with_items: host_sites
+  when: lamp_sites[item].type is defined and lamp_sites[item].type == 'wordpress'

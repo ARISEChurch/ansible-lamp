@@ -1,0 +1,7 @@
+---
+
+- hosts: 'wordpress'
+  sudo: True
+
+  roles:
+    - role: '../roles/wordpress'

@@ -1,0 +1,16 @@
+---
+
+- include: 'config.yml'
+
+- hosts: '{{ hosts }}'
+  sudo: yes
+
+  roles:
+    - role: ../roles/deploy-git
+      deploy_symlinks:
+        - src: 'uploads'
+          dest: 'wp-content/uploads'
+        - src: 'htaccess'
+          dest: '.htaccess'
+        - src: 'wp-config.php'
+          dest: 'wp-config.php'
