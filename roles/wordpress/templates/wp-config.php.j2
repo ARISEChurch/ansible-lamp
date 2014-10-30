@@ -48,7 +48,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-{{ wordpress_salt.content }}
+define('AUTH_KEY',         '{{ lookup('password', secret + '/credentials/sites/' + item + '/auth_key length=' wordpress_salt_length') }}');
+define('SECURE_AUTH_KEY',  '{{ lookup('password', secret + '/credentials/sites/' + item + '/secure_auth_key length=' wordpress_salt_length') }}');
+define('LOGGED_IN_KEY',    '{{ lookup('password', secret + '/credentials/sites/' + item + '/logged_in_key length=' wordpress_salt_length') }}');
+define('NONCE_KEY',        '{{ lookup('password', secret + '/credentials/sites/' + item + '/nonce_key length=' wordpress_salt_length') }}');
+define('AUTH_SALT',        '{{ lookup('password', secret + '/credentials/sites/' + item + '/auth_salt length=' wordpress_salt_length') }}');
+define('SECURE_AUTH_SALT', '{{ lookup('password', secret + '/credentials/sites/' + item + '/secure_auth_salt length=' wordpress_salt_length') }}');
+define('LOGGED_IN_SALT',   '{{ lookup('password', secret + '/credentials/sites/' + item + '/logged_in_salt length=' wordpress_salt_length') }}');
+define('NONCE_SALT',       '{{ lookup('password', secret + '/credentials/sites/' + item + '/nonce_salt length=' wordpress_salt_length') }}');
 
 /**#@-*/
 

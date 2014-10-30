@@ -1,11 +1,5 @@
 ---
 
-- name: 'Get wordpress salt'
-  uri:
-    url: 'https://api.wordpress.org/secret-key/1.1/salt/'
-    return_content: 'yes'
-  register: 'wordpress_salt'
-
 - name: 'debug sites'
   debug:
     var: 'lamp_sites[item]'
