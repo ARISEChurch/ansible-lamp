@@ -1,18 +1,22 @@
 ---
 
+- name: 'Get wordpress salt'
+  uri:
+    url: 'https://api.wordpress.org/secret-key/1.1/salt/'
+    return_content: 'yes'
+  register: 'wordpress_salt'
+
+- name: 'debug sites'
+  debug:
+    var: 'lamp_sites[item]'
+  with_items: host_sites
+
 - name: Ensure shared uploads directory
   file:
     state: "directory"
     path: "/home/{{ item }}/shared/uploads"
     owner: "{{ item }}"
     group: "{{ item }}"
-  with_items: host_sites
-  when: lamp_sites[item].type is defined and lamp_sites[item].type == 'wordpress'
-
-- name: 'Get wordpress salt'
-  uri:
-    url: 'https://api.wordpress.org/secret-key/1.1/salt/'
-  register: 'wordpress_salt'
   with_items: host_sites
   when: lamp_sites[item].type is defined and lamp_sites[item].type == 'wordpress'
 
