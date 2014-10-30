@@ -1,10 +1,5 @@
 ---
 
-- name: 'debug sites'
-  debug:
-    var: 'lamp_sites[item]'
-  with_items: host_sites
-
 - name: Ensure shared uploads directory
   file:
     state: "directory"
