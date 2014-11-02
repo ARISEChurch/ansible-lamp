@@ -1,6 +1,6 @@
 ---
 
-- hosts: 'wordpress'
+- hosts: 'web'
   sudo: True
 
   roles:

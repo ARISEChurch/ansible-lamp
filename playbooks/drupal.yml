@@ -1,6 +1,6 @@
 ---
 
-- hosts: drupal
+- hosts: 'web'
   sudo: True
 
   roles:
