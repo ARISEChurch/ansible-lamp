@@ -1,0 +1,24 @@
+---
+
+- hosts: 'all'
+  sudo: 'yes'
+  tasks:
+    - name: 'Ensure ansible user'
+      user:
+        name: 'ansible'
+        state: 'present'
+        groups: ''
+
+    - name: 'Add ansible authorized key'
+      authorized_key:
+        key: "{{ lookup('file', '../files/ansible/id_rsa.pub') }}"
+        user: 'ansible'
+      sudo_user: 'ansible'
+
+    - name: 'Add ansible to sudoers'
+      lineinfile:
+        state: 'present'
+        dest: '/etc/sudoers'
+        regexp: '^ansible ALL\='
+        line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'

@@ -48,3 +48,13 @@
     - { role: ../roles/deploy,        tags: deploy }
 
 - include: homes.yml
+
+- hosts: 'all:!localhost'
+  sudo: True
+  tasks:
+    - name: 'Remove ansible from sudoers'
+      lineinfile:
+        state: 'absent'
+        dest: '/etc/sudoers'
+        regexp: '^ansible ALL\='
+        validate: 'visudo -cf %s'
