@@ -1,0 +1,8 @@
+---
+
+- hosts: 'solr'
+  sudo: True
+
+  roles:
+    - role: 'geerlingguy.solr'
+      tags: 'solr'
