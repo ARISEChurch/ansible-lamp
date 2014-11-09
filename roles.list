@@ -13,4 +13,3 @@ debops.users
 debops.sshkeys
 debops.directories
 debops.mysql
-geerlingguy.solr

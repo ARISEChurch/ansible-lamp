@@ -1,0 +1,49 @@
+---
+jiv_solr__version: 4.7.2
+
+## search_api_solr Drupal module ##
+#Version
+jiv_solr__searchApiSolrVersion: 7.x-1.5
+jiv_solr__searchApiSolrId: search_api_solr-{{ jiv_solr__searchApiSolrVersion }}
+#Path to the Solr configuration 
+jiv_solr__searchApiSolrConfPath: "{{ jiv_solr__searchApiSolrId }}/solr-conf/4.x"
+## apachesolr Drupal module ##
+#Version
+jiv_solr__apachesolrVersion: 7.x-1.x-dev
+jiv_solr__apachesolrId: apachesolr-{{ jiv_solr__apachesolrVersion }}
+#Path to the Solr configuration 
+jiv_solr__apachesolrConfPath: "{{ jiv_solr__apachesolrId }}/solr-conf/solr-4.x"
+
+# Linux user and group name
+jiv_solr__user: solr
+
+# This is appended to the end of the automatically fetched closest mirror URL.
+# E.g. http://apache.mirror.rafal.ca/lucene/solr/
+jiv_solr__downloadPath: "{{ jiv_solr__version }}/solr-{{ jiv_solr__version }}.tgz"
+jiv_solr__tempPath: /tmp/ansible_solr
+jiv_solr__saveTarPath: "{{ jiv_solr__tempPath }}/solr-{{ jiv_solr__version }}.tgz"
+jiv_solr__installPath: /opt/solr
+jiv_solr__multicoreRoot: cores 
+jiv_solr__cores:
+  - { name: core1, coreType: default, keepChanges: no }
+  - { name: core2, coreType: drupal_apachesolr, keepChanges: no }
+  - { name: core3, coreType: drupal_search_api_solr, keepChanges: no }
+
+# Uninstalling
+# You can easily override these on the command line.
+# E.g. ansible-playbook -i hosts play.yml -e jiv_solr__uninstall=true -e jiv_solr__uninstallDependencies=true
+jiv_solr__uninstall: no 
+jiv_solr__uninstallDependencies: no 
+
+# Not yet implemented
+jiv_solr__passwordProtection: no
+
+## Traffic allowed only from these hosts:
+#
+# Good way to secure your Apache Solr server.
+# Include the server IPs that use the Apache Solr index.
+# By including your own computers IP you can use the web interface.
+
+#jiv_solr__allowedHosts:
+#  - xxx.xx.xxx.xx 
+#  - xxx.xx.xxx.xx 

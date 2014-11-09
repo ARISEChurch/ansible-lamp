@@ -4,5 +4,7 @@
   sudo: True
 
   roles:
-    - role: 'geerlingguy.solr'
+    - role: '../ansible-multicore-solr/roles/jiv_e.solr'
       tags: 'solr'
+      jiv_solr__version: '4.9.0'
+      jiv_solr__searchApiSolrVersion: '7.x-1.6'
