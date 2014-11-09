@@ -1,3 +1,6 @@
 [submodule "debops-playbooks"]
 	path = debops-playbooks
 	url = git://github.com/debops/debops-playbooks.git
+[submodule "ansible-multicore-solr"]
+	path = ansible-multicore-solr
+	url = git://github.com/jiv-e/ansible-multicore-solr.git
