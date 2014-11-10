@@ -10,3 +10,10 @@
       deploy_symlinks:
         - src: 'default'
           dest: 'sites/default'
+      deploy_optional_commands:
+        - 'drush cc all'
+        - 'drush updb'
+        - 'drush cc all'
+        - 'drush en -y features'
+        - 'drush fra'
+        - 'drush cc all'
