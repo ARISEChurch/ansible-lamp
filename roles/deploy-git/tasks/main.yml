@@ -86,13 +86,18 @@
   when: sites is not defined or item in sites
   ignore_errors: True
 
-- name: Run optional commands
-  command: '{{ item[1] }}'
+- name: 'Run .deploy.sh'
+  command: 'sh .deploy.sh'
   args:
-    chdir: '/home/{{ item[0] }}/public_html'
-  sudo_user: '{{ item[0] }}'
-  with_nested:
-    - deploy_sites
-    - deploy_optional_commands
-  when: sites is not defined or item[0] in sites
+    chdir: '/home/{{ item }}/public_html'
+  sudo: '{{ item }}'
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
   ignore_errors: True
+
+- name: 'Remove .deploy.sh'
+  file:
+    state: 'absent'
+    path: '/home/{{ item }}/public_html/.deploy.sh'
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
