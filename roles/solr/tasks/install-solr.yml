@@ -1,7 +1,8 @@
 ---
+
 # Ensure dependencies
-- name: Update APT package cache
-  apt: update_cache=yes
+# - name: Update APT package cache
+#   apt: update_cache=yes
 
 - name: Ensure java is installed
   apt: name=default-jre-headless state=present
@@ -9,14 +10,17 @@
 - name: Ensure curl is installed
   apt: name=curl state=present
 
+- set_fact:
+    solr_mirror_url: 'curl -s http://www.apache.org/dyn/closer.cgi/lucene/solr | sed -n ''/id="http"/,/<p><\/p>/p'' | sed -nr ''s/.*href=\"(.*)\".*/\1/p'''
+
 - name: Get the closest mirror for Apache Solr
-  shell: curl -s http://www.apache.org/dyn/closer.cgi/lucene/solr | sed -n '/id="http"/,/id="ftp"/p' | sed -nr 's/.*href=\"(.*)\".*/\1/p'
+  shell: '{{ solr_mirror_url }}'
   register: jiv_solr__closestMirror
   changed_when: false
 
 - name: Print closest mirror
-  debug: msg="Closest mirror found - {{ jiv_solr__closestMirror.stdout }}"
-#"
+  debug:
+    msg: "Closest mirror found - {{ jiv_solr__closestMirror.stdout }}"
 
 - name: Ensure that temp folder is present
   file: dest={{ jiv_solr__tempPath }} state=directory
@@ -35,13 +39,13 @@
   file: dest={{ jiv_solr__installPath }}/{{ jiv_solr__multicoreRoot }} state=directory
         owner=root group=root mode=755
 
-- name: Ensure that core folders exist 
+- name: Ensure that core folders exist
   file: dest={{ jiv_solr__installPath }}/{{ jiv_solr__multicoreRoot }}/solr/{{ item.name }} state=directory
         owner=root group=root mode=755
   with_items: jiv_solr__cores
 
 - name: Copy solr/example contents to multicore configuration root
-  command: rsync -au {{ jiv_solr__installPath }}/example/ {{ jiv_solr__installPath }}/{{ jiv_solr__multicoreRoot }} 
+  command: rsync -au {{ jiv_solr__installPath }}/example/ {{ jiv_solr__installPath }}/{{ jiv_solr__multicoreRoot }}
 
 - name: Ensure that unnecessary folders are removed
   file: dest={{ jiv_solr__installPath }}/{{ jiv_solr__multicoreRoot }}/{{ item }} state=absent
@@ -49,12 +53,12 @@
     - exampledocs
     - example-DIH
     - example-schemaless
-    - collection1
     - multicore
+    - solr/collection1
 
 - name: Upload multicore solr.xml template
   template: src=solr.xml.j2 dest={{ jiv_solr__installPath }}/{{ jiv_solr__multicoreRoot }}/solr/solr.xml
-            owner=root group=root mode=644 
+            owner=root group=root mode=644
 
 - name: Copy example conf to core folders
   command: rsync -au {{ jiv_solr__installPath }}/example/solr/collection1/ {{ jiv_solr__installPath }}/{{ jiv_solr__multicoreRoot }}/solr/{{ item.name }}/
@@ -65,17 +69,17 @@
             owner=root group=root mode=644
   with_items: jiv_solr__cores
 
-- name: Upload Apache Solr init script - sudo service solr start/stop/restart 
+- name: Upload Apache Solr init script - sudo service solr start/stop/restart
   template: src=solr-init.d.sh.j2 dest=/etc/init.d/solr
             owner=root group=root mode=755
 
-- name: Ensure that solr group is present  
+- name: Ensure that solr group is present
   group: name={{ jiv_solr__user }} state=present
 
-- name: Ensure that solr user is present  
+- name: Ensure that solr user is present
   user: name={{ jiv_solr__user }}
         group={{ jiv_solr__user }}
-        state=present 
+        state=present
         home=/home/solr
         shell=/bin/bash
 
@@ -92,27 +96,4 @@
   ignore_errors: yes
 
 - name: Start Apache Solr
-  service: name=solr state=started 
-
-# TODO Do it!
-- name: Secure Apache Solr web interface with password
-  ping:
-  when: jiv_solr__passwordProtection 
-
-#http://www.hashbangcode.com/blog/adding-iptables-rules-ansible
-- name: Get iptables rules
-  shell: iptables -L
-  register: iptablesRules
-  changed_when: false
-
-#NOTE If you edit the iptables command remember to edit
-#     templates/iptables/solr-allowed-hosts.j2 and uninstall script also
-- name: Allow traffic from defined hosts - NOTE! This doesn't restrict traffic!
-  command: iptables -I INPUT 1 -p tcp -s {{ item }} --dport 8983 -j ACCEPT -m comment --comment "Solr allow {{ item }}"
-  with_items: jiv_solr__allowedHosts
-  when: jiv_solr__allowedHosts | default(false) and iptablesRules.stdout.find("Solr allow {{ item }}") == -1
-
-- name: Ensure that above hosts are allowed on reboot
-  template: src=iptables/solr-allowed-hosts.j2 dest=/etc/network/if-pre-up.d/solrhosts
-            owner=root group=root mode=0755
-  when: jiv_solr__allowedHosts | default(false)
+  service: name=solr state=started

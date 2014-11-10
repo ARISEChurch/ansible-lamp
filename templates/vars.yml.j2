@@ -55,3 +55,13 @@ deploy_sites:
   - '{{ site }}'
 {% endif %}
 {% endfor %}
+
+jiv_solr__cores:
+{% for site in host_sites %}
+{% set lamp_site = lamp_sites[site] %}
+{% for solr_core in lamp_site.solr_cores|default([]) %}
+  - name: '{{ solr_core.name }}'
+    coreType: '{{ solr_core.type|default('default') }}'
+    keepChanges: false
+{% endfor %}
+{% endfor %}
