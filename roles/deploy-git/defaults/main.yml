@@ -2,3 +2,4 @@
 
 deploy_version: 'master'
 deploy_symlinks: []
+deploy_optional_commands: []

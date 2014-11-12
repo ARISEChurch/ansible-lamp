@@ -4,4 +4,8 @@
   sudo: True
 
   roles:
+    - role: 'geerlingguy.drush'
+      tags: 'drush'
+
     - role: '../roles/drupal'
+      tags: 'drupal'

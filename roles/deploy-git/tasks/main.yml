@@ -85,3 +85,19 @@
   with_items: deploy_sites
   when: sites is not defined or item in sites
   ignore_errors: True
+
+- name: 'Run .deploy.sh'
+  command: 'sh .deploy.sh'
+  args:
+    chdir: '/home/{{ item }}/public_html'
+  sudo: '{{ item }}'
+  with_items: deploy_sites
+  when: sites is not defined or item in sites
+  ignore_errors: True
+
+- name: 'Remove .deploy.sh'
+  file:
+    state: 'absent'
+    path: '/home/{{ item }}/public_html/.deploy.sh'
+  with_items: deploy_sites
+  when: sites is not defined or item in sites

@@ -5,3 +5,4 @@
 - include: web.yml
 - include: drupal.yml
 - include: wordpress.yml
+- include: solr.yml
