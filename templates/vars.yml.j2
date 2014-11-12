@@ -12,6 +12,9 @@ users_admins:
 {% endfor %}
 
 users_list:
+{% for user in users_list|default([]) %}
+  - {{ user }}
+{% endfor %}
 {% for site in host_sites %}
 {% set lamp_site = lamp_sites[site] %}
   - name: "{{ site }}"
