@@ -13,4 +13,6 @@ debops.users
 debops.sshkeys
 debops.directories
 debops.mysql
+debops.nginx
+debops.reprepro
 geerlingguy.drush
