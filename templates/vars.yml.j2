@@ -4,6 +4,7 @@ users_admins:
 {% for user in host_admins %}
 {% set lamp_user = lamp_users[user] %}
   - name: "{{ lamp_user.name }}"
+    state: '{{ lamp_user.state|default('present') }}'
     groups: {{ lamp_user.groups|default(['admins']) }}
     sshkeys:
 {% for public_key in lamp_user.public_keys|default(['files/' + lamp_user.name + '/key.pub']) %}
@@ -17,7 +18,8 @@ users_list:
 {% endfor %}
 {% for site in host_sites %}
 {% set lamp_site = lamp_sites[site] %}
-  - name: "{{ site }}"
+  - name: '{{ site }}'
+    state: '{{ lamp_site.state|default('present') }}'
     groups: {{ lamp_site.groups|default(['sftponly']) }}
 {% endfor %}
 
